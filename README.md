@@ -67,6 +67,11 @@ A full-stack web application that allows college administrators to manage events
 - `kiran.bhat` / `student123`
 - `divya.kamath` / `student123`
 - `suresh.pai` / `student123`
+- `ananya.hegde` / `student123`
+- `rohan.shenoy` / `student123`
+- `nisha.prabhu` / `student123`
+- `tejas.mallya` / `student123`
+- `priya.bangera` / `student123`
 
 ## Known Issues or Incomplete Parts
 - **Date Picking UI**: Used the native HTML5 `<input type="date">` for the admin create event form. While highly functional, it lacks custom visual branding across different browsers.
