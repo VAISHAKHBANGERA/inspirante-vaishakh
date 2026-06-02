@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
     // Generate JWT
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
+process.env.JWT_SECRET || 'vaishakh_secret_key_123',
       { expiresIn: '24h' }
     );
 

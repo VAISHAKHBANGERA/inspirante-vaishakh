@@ -1,6 +1,10 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+// ... rest of your code remains exactly the same
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
@@ -55,14 +59,14 @@ connectDB().then(async () => {
       console.log('No users found. Auto-seeding initial users...');
       const adminHash = await bcrypt.hash('inspirante2026', 10);
       const studentHash = await bcrypt.hash('student123', 10);
-      
+
       await User.create({
         name: 'Admin',
         username: 'admin',
         password: adminHash,
         role: 'admin'
       });
-      
+
       await User.create({
         name: 'Asha Rao',
         username: 'asha.rao',
