@@ -19,7 +19,19 @@ async function renderEventsPage() {
   app.innerHTML = '<div class="loading">Loading events...</div>';
 
   try {
-    const events = await apiFetch('/events');
+    let events = [];
+    let registeredEventIds = new Set();
+    
+    if (user.role === 'admin') {
+      events = await apiFetch('/events');
+    } else {
+      const [fetchedEvents, myRegs] = await Promise.all([
+        apiFetch('/events'),
+        apiFetch('/registrations/my').catch(() => [])
+      ]);
+      events = fetchedEvents;
+      registeredEventIds = new Set(myRegs.map(r => r.event.id));
+    }
 
     if (events.length === 0) {
       app.innerHTML = '<div class="empty-state"><h2>No events available</h2><p>Check back later for upcoming events.</p></div>';
@@ -29,7 +41,7 @@ async function renderEventsPage() {
     if (user.role === 'admin') {
       renderAdminDashboard(app, events);
     } else {
-      renderStudentEvents(app, events);
+      renderStudentEvents(app, events, registeredEventIds);
     }
   } catch (err) {
     app.innerHTML = `<div class="error-state"><h2>Error loading events</h2><p>${err.message}</p></div>`;
@@ -86,10 +98,11 @@ function renderAdminDashboard(app, events) {
   `;
 }
 
-function renderStudentEvents(app, events) {
+function renderStudentEvents(app, events, registeredEventIds = new Set()) {
   let cards = events.map(event => {
     const spotsLeft = event.capacity - event.registeredCount;
     const isFull = spotsLeft <= 0;
+    const isRegistered = registeredEventIds.has(event._id);
 
     return `
       <div class="event-card ${isFull ? 'event-full' : ''}">
@@ -103,13 +116,15 @@ function renderStudentEvents(app, events) {
           <p class="event-detail"><span class="detail-icon">👥</span> ${event.registeredCount} / ${event.capacity} registered</p>
         </div>
         <div class="event-card-footer">
+          <div class="event-message ${isRegistered ? 'success-message' : ''}" id="msg-${event._id}" style="display:${isRegistered ? 'block' : 'none'}; margin-bottom: 8px;">
+            ${isRegistered ? '✅ Registered' : ''}
+          </div>
           <button class="btn btn-primary btn-register"
                   data-event-id="${event._id}"
                   ${isFull ? 'disabled' : ''}>
             ${isFull ? 'Full' : 'Register'}
           </button>
         </div>
-        <div class="event-message" id="msg-${event._id}" style="display:none;"></div>
       </div>
     `;
   }).join('');
