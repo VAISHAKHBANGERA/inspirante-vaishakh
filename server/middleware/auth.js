@@ -8,9 +8,10 @@ const authMiddleware = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ message: 'Unauthorized — no token provided' });
     }
-
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+const token = authHeader.split(' ')[1];
+    
+    // Fallback added here to match your login route and fix the Render crash
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'vaishakh_secret_key_123');
 
     req.user = { userId: decoded.userId, role: decoded.role };
     next();
