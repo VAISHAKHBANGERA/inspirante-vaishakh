@@ -12,6 +12,10 @@ const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 const registrationRoutes = require('./routes/registrations');
 
+// Import models for auto-seeding
+const User = require('./models/User');
+const bcrypt = require('bcryptjs');
+
 const app = express();
 
 // Middleware
@@ -43,7 +47,34 @@ app.use((err, req, res, next) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 
-connectDB().then(() => {
+connectDB().then(async () => {
+  // Auto-seed admin user and some students if no users exist
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      console.log('No users found. Auto-seeding initial users...');
+      const adminHash = await bcrypt.hash('inspirante2026', 10);
+      const studentHash = await bcrypt.hash('student123', 10);
+      
+      await User.create({
+        name: 'Admin',
+        username: 'admin',
+        password: adminHash,
+        role: 'admin'
+      });
+      
+      await User.create({
+        name: 'Asha Rao',
+        username: 'asha.rao',
+        password: studentHash,
+        role: 'student'
+      });
+      console.log('Seeded initial users successfully.');
+    }
+  } catch (err) {
+    console.error('Failed to auto-seed users:', err.message);
+  }
+
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
