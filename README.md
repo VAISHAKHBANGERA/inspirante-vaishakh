@@ -54,6 +54,9 @@ A full-stack web application that allows college administrators to manage events
    Open your browser and navigate to:
    [http://localhost:3000](http://localhost:3000)
 
+7.**Deployed live url**
+  URL = https://inspirante-vaishakh.onrender.com
+  
 ## Sample Credentials
 
 **Admin Account:**
